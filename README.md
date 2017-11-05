@@ -24,3 +24,4 @@ The database includes three tables:
 - Log table
 
 To execute the program, run `python3 db.py` from the command line or from your preferred IDE.
+After running go to http://localhost:8000/ and click on submit button it will load the results.
