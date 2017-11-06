@@ -17,17 +17,17 @@ html = '''<!DOCTYPE html>
 </form>
 <pre>
 <h3>Top 3 Articles by Views</h3>
-<div>
+<ol>
 {0}
-</div>
+</ol>
 <h3>Author Rank by Article Views</h3>
-<div>
+<ol>
 {1}
-</div>
+</ol>
 <h3>Dates With More Than 1% Error Rate</h3>
-<div>
+<ol>
 {2}
-</div>
+</ol>
 </pre>
 '''
 
