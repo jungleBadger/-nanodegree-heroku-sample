@@ -1,4 +1,4 @@
-#!/usr/bin/env pythON3
+#!/usr/bin/env python3
 import http.server
 import os
 from socketserver import ThreadingMixIn
@@ -8,7 +8,7 @@ results = {}
 html = '''<!DOCTYPE html>
 <title>Bookmark Server</title>
 <form method="POST">
-    <buttON type="submit">Get results!</buttON>
+    <button type="submit">Get results!</button>
 </form>
 <pre>
 {0}
@@ -20,7 +20,7 @@ html = '''<!DOCTYPE html>
 query_1 = (
     "SELECT articles.title, count(*) as views "
     "FROM articles JOIN log ON log.path "
-    "like cONcat('%', articles.slug, '%') "
+    "like concat('%', articles.slug, '%') "
     "WHERE log.status like '%200%' GROUP BY "
     "articles.title, log.path ORDER BY views desc limit 3")
 
@@ -46,7 +46,7 @@ query_3 = (
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
-        self.send_header('CONtent-type', 'text/html')
+        self.send_header('Content-type', 'text/html')
         self.end_headers()
         self.wfile.write(html.format(
             results.get("query_1_result"),
@@ -59,21 +59,21 @@ class Handler(http.server.BaseHTTPRequestHandler):
         results["query_2_result"] = get_query_results(query_2)
         results["query_3_result"] = get_query_results(query_3)
         self.send_response(303)
-        self.send_header('LocatiON', '/')
+        self.send_header('Location', '/')
         self.end_headers()
 
 
-def cONnect(database_name="news"):
+def connect(database_name="news"):
     try:
         db = psycopg2.connect("dbname={}".format(database_name))
         cursor = db.cursor()
         return db, cursor
     except:
-        Exception("Unable to cONnect to the database")
+        Exception("Unable to connect to the database")
 
 
 def get_query_results(query):
-    db, cursor = cONnect()
+    db, cursor = connect()
     cursor.execute(query)
     db.close()
     return cursor.fetchall()
