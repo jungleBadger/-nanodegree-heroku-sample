@@ -4,16 +4,30 @@ import os
 from socketserver import ThreadingMixIn
 import psycopg2
 
-results = {}
+results = {
+    "query_1_result": "",
+    "query_2_result": "",
+    "query_3_result": "",
+}
+
 html = '''<!DOCTYPE html>
 <title>Bookmark Server</title>
 <form method="POST">
     <button type="submit">Get results!</button>
 </form>
 <pre>
+<h3>Top 3 Articles by Views</h3>
+<div>
 {0}
+</div>
+<h3>Author Rank by Article Views</h3>
+<div>
 {1}
+</div>
+<h3>Dates With More Than 1% Error Rate</h3>
+<div>
 {2}
+</div>
 </pre>
 '''
 
@@ -55,9 +69,15 @@ class Handler(http.server.BaseHTTPRequestHandler):
         ).encode())
 
     def do_POST(self):
-        results["query_1_result"] = get_query_results(query_1)
-        results["query_2_result"] = get_query_results(query_2)
-        results["query_3_result"] = get_query_results(query_3)
+        for x, y in get_query_results(query_1):
+            results["query_1_result"] += "<li>{0} - {1}</li>".format(x, y)
+
+        for x, y in get_query_results(query_2):
+            results["query_2_result"] += "<li>{0} - {1}</li>".format(x, y)
+
+        for x, y in get_query_results(query_3):
+            results["query_3_result"] += "<li>{0} - {1}</li>".format(x, y)
+
         self.send_response(303)
         self.send_header('Location', '/')
         self.end_headers()
