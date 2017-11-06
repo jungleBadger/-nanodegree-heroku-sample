@@ -75,8 +75,9 @@ def connect(database_name="news"):
 def get_query_results(query):
     db, cursor = connect()
     cursor.execute(query)
-    db.close()
+
     return cursor.fetchall()
+    # db.close()
 
 
 class ThreadHTTPServer(ThreadingMixIn, http.server.HTTPServer):
