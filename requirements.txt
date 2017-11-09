@@ -2,3 +2,6 @@ requests>=2.12
 psycopg2
 sqlalchemy
 flask
+Flask-Session
+httplib2
+oauth2client
