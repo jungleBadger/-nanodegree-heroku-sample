@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 from sqlalchemy import Column, Integer, String
-
 from model.Base import Base
 
 
-class Restaurant(Base):
-    __tablename__ = 'restaurant'
+class Category(Base):
+    __tablename__ = 'category'
     name = Column(
         String(80),
         nullable=False

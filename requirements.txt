@@ -5,3 +5,4 @@ flask
 Flask-Session
 httplib2
 oauth2client
+flask_httpauth
