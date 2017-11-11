@@ -5,15 +5,28 @@
     <title>Title</title>
 </head>
 <body>
-{% for category in categories %}
 
+<div id="wrapper">
+    {% include 'header.html' %}
+    <main>
+        <section id="left-container">
+        {% if user %}
+            <div>
+                <a href="/category/new">New category</a>
+            </div>
+        {% endif -%}
+        {% for category in categories %}
+            <ul>
+                <li><a href="{{'/category/%s/info'%category.id|urlencode}}">{{category.name}}</a></li>
+            </ul>
+        {% endfor %}
+        </section>
+        <section id="right-container">
 
+        </section>
 
-{{category.name}}
-
-{% endfor %}
-
-<a href="/logout">LOGOUT</a>
+    </main>
+</div>
 
 </body>
 </html>

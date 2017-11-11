@@ -6,7 +6,105 @@
 </head>
 <body>
 
-    {{category}}
-    {{items}}
+
+<div id="wrapper">
+    {% include 'header.html' %}
+
+    {% if user %}
+    <div>
+        <a id="add-item">New item</a>
+    </div>
+    {% endif -%}
+    <div>
+        <h3>{{category.name}}</h3>
+    </div>
+    <pre>
+         {{category.description}}
+     </pre>
+    <ul>
+    {% for item in items %}
+        <div>
+            <span class="item-name">{{item.name}}</span>
+            <span class="item-description">{{item.description}}</span>
+            <span class="item-price">{{item.price}}</span>
+            <button data-item-id="{{item.id}}" class="edit-item">Edit</button>
+            <form method="POST" action="{{'/category/{0}/item/{1}/delete'.format(category.id, item.id)}}">
+                 <button data-item-id="{{item.id}}" class="delete-item" type="submit">Delete</button>
+            </form>
+        </div>
+    {% endfor %}
+    </ul>
+</div>
+
+ <div class="modal" id="add-item-modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <form method="POST" action="{{'/category/{0}/item/new'.format(category.id)}}">
+            <input type="text" name="name" id="name" required />
+            <input type="text" name="description" id="description" />
+            <input type="text" name="price" id="price" required />
+            <input type="hidden" name="item_id" id="item_id" />
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+    <button class="modal-close is-large" aria-label="close" id="close-item-modal"></button>
+</div>
+
+
+<script>
+
+    (function () {
+        "use strict";
+
+
+        let props = {
+            "activeItemId": ""
+        }
+
+        let elements = {
+            "addItemBtn": document.querySelector("#add-item"),
+            "modalEl": document.querySelector("#add-item-modal"),
+            "modalCloseBtn": document.querySelector("#close-item-modal"),
+            "editItemsBtns": document.querySelectorAll(".edit-item"),
+            "deleteItemsBtns": document.querySelectorAll(".delete-item"),
+            "itemNameField": document.getElementById("name"),
+            "descriptionNameField": document.getElementById("description"),
+            "priceNameField": document.getElementById("price"),
+            "updateItemId": document.getElementById("item_id")
+        }
+
+        let methods = {
+            "populateEditBox": function () {
+                props.activeItemId = this.getAttribute("data-item-id");
+                elements.updateItemId.value =  this.getAttribute("data-item-id");
+                elements.itemNameField.value = this.parentElement.querySelector(".item-name").innerText || "";
+                elements.descriptionNameField.value = this.parentElement.querySelector(".item-description").innerText || "";
+                elements.priceNameField.value = this.parentElement.querySelector(".item-price").innerText || "";
+                methods.openModal();
+            },
+            "openModal": function () {
+                elements.modalEl.classList.add("is-active");
+            },
+            "closeModal": function () {
+                props.activeItemId = "";
+                elements.updateItemId.value = "";
+                elements.modalEl.classList.remove("is-active");
+            },
+            "deleteItem": function () {
+
+            }
+        }
+
+        elements.addItemBtn.addEventListener("click", methods.openModal);
+        elements.modalCloseBtn.addEventListener("click", methods.closeModal);
+
+        for (let i = 0; i < elements.editItemsBtns.length; i += 1) {
+            elements.editItemsBtns[i].addEventListener("click", methods.populateEditBox);
+        }
+
+
+    }());
+
+</script>
 </body>
 </html>

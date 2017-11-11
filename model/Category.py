@@ -6,11 +6,17 @@ from model.Base import Base
 class Category(Base):
     __tablename__ = 'category'
     name = Column(
-        String(80),
+        String(30),
         nullable=False
+    )
+
+    description = Column(
+        String(150),
+        nullable=True
     )
 
     id = Column(
         Integer,
-        primary_key=True
+        primary_key=True,
+        autoincrement=True
     )

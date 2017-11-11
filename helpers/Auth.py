@@ -4,20 +4,42 @@ import httplib2
 from flask import request, flash, g, make_response
 from flask_httpauth import HTTPTokenAuth
 from flask import session as login_session
+from helpers.Session import session
+from model.User import User
 import json
 import requests
-
+import random, string
 
 auth = HTTPTokenAuth(scheme='Token')
-
 
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Nanodegreee Udacity "
 
+
+def refresh_user_state():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in range(32))
+    login_session['state'] = state
+    return state
+
+def get_user_info(token=None, email=None):
+    if token:
+        try:
+            return session.query(User).filter_by(token=token).one()
+        except:
+            return False
+    elif email:
+        try:
+            return session.query(User).filter_by(email=email).one()
+        except:
+            return False
+    else:
+        return False
+
+
 @auth.verify_token
 def verify_token(token):
-    print(token)
     if login_session.get('access_token'):
         g.current_user = login_session.get('access_token')
         return True
@@ -90,6 +112,23 @@ def gconnect():
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
+
+    check_user = get_user_info(None, data['email'])
+    print(check_user)
+    if not check_user:
+        user = User(
+            name=data['name'],
+            picture=data['picture'],
+            email=data['email'],
+            token=login_session['access_token']
+        )
+        session.add(user)
+        session.commit()
+    else:
+        check_user.token = login_session['access_token']
+        session.add(check_user)
+        session.commit()
+
 
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']

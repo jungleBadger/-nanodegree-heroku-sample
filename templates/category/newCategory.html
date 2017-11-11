@@ -6,5 +6,17 @@
 </head>
 <body>
 
+<div>
+    <div id="wrapper">
+        {% include 'header.html' %}
+        <form action="/category/new" method="POST">
+            <input id="name" name="name" type="text" required/>
+            <input id="description" name="description" type="text"/>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+
+</div>
+
 </body>
 </html>

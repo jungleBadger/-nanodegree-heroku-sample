@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from model.Base import Base
 from model.Category import Category
 from model.CatalogItem import CatalogItem
+from model.User import User
 
 engine = create_engine('sqlite:///store.db')
 # Bind the engine to the metadata of the Base class so that the
@@ -23,15 +24,15 @@ DBSession = sessionmaker(bind=engine)
 # session.rollback()
 session = DBSession()
 
-
-category1 = Category(name="Surf")
-
-session.add(category1)
-session.commit()
-
-catalogItem1 = CatalogItem(name="Veggie Burger", description="Juicy grilled veggie patty with tomato mayo and lettuce",
-                     price="$7.50", category=category1)
-
-session.add(catalogItem1)
-session.commit()
+#
+# category1 = Category(name="Surf")
+#
+# session.add(category1)
+# session.commit()
+#
+# catalogItem1 = CatalogItem(name="Veggie Burger", description="Juicy grilled veggie patty with tomato mayo and lettuce",
+#                      price="$7.50", category=category1)
+#
+# session.add(catalogItem1)
+# session.commit()
 
