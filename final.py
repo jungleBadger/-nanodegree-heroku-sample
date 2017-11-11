@@ -60,6 +60,7 @@ def list_category(category_id):
     if scope_category:
         items = session.query(CatalogItem).filter_by(
             category_id=scope_category.id).all()
+        print(get_user_info(login_session.get('access_token')))
         return render_template('/category/categoryDetails.html',
                                user=get_user_info(login_session.get('access_token')),
                                category=scope_category,

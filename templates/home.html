@@ -4,9 +4,56 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
+        html, body, #wrapper {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            overflow: hidden !important;
+        }
+
+        #wrapper {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+        }
         main {
             display: flex;
+            flex: 1;
         }
+        main > * {
+            box-sizing: border-box;
+            padding: 10px;
+        }
+
+        .section {
+            border: 1px solid gainsboro;
+            width: 100%;
+            height: 100%;
+        }
+
+        #left-container {
+            flex: 4;
+            max-width: 33%
+        }
+
+        #right-container {
+            flex: 8;
+            max-width: 67%;
+        }
+
+        .cat-item-name {
+            font-size: 20px;
+        }
+
+
+        .cat-item-category {
+            font-weight: 400;
+            font-size: 10px;
+        }
+
+
     </style>
 </head>
 <body>
@@ -14,25 +61,42 @@
 <div id="wrapper">
     {% include 'header.html' %}
     <main>
-        <section id="left-container">
-        {% if user %}
-            <div>
-                <a href="/category/new">New category</a>
+        <section id="left-container" class="section">
+            <div class="menu">
+                 <p class="menu-label">Categories</p>
+                {% if user %}
+                <div>
+                    <a href="/category/new" class="button">New category</a>
+                </div>
+                {% endif -%}
+                  <ul class="menu-list">
+                {% for category in categories %}
+                    <li><a href="{{'/category/%s/info'%category.id|urlencode}}" class="is-size-1-desktop">{{category.name}}</a></li>
+                {% endfor %}
+                 </ul>
+                {% if not categories %}
+                <h3>No Categories available</h3>
+                <h5>Only logged users can create content</h5>
+                {% endif -%}
             </div>
-        {% endif -%}
-        {% for category in categories %}
-            <ul>
-                <li><a href="{{'/category/%s/info'%category.id|urlencode}}">{{category.name}}</a></li>
-            </ul>
-        {% endfor %}
-        </section>
-        <section id="right-container">
-            {% for item in items %}
-                   <ul>
-                        <li><a href="">{{item.name}} {{item.category.name}}</a></li>
-                    </ul>
 
-        {% endfor %}
+        </section>
+        <section id="right-container" class="section">
+            <div class="menu">
+                <p class="menu-label">
+                    Latest 10 items
+                </p>
+                {% for item in items %}
+                <ul class="menu-list">
+                    <li><a href="">
+                        <span class="cat-item-name is-size-1-desktop">{{item.name}}</span>
+                        <span class="cat-item-category is-size-1-desktop">{{item.category.name}}</span>
+                        <span class="cat-item-category is-size-1-desktop">{{item.created_date}}
+                    </a></li>
+                </ul>
+                {% endfor %}
+            </div>
+
         </section>
 
     </main>

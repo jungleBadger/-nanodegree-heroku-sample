@@ -1,4 +1,4 @@
-<header id="app-header">
+<header id="app-header" class="navbar">
     <style>
         #app-header {
             width: 100%;
@@ -9,10 +9,11 @@
             justify-content: flex-end;
             box-sizing: border-box;
             padding: 10px;
+            background-color: gainsboro;
+            box-shadow: 1px 1px 1px 1px aliceblue;
         }
 
-        #app-header #logo {
-            text-decoration: none;
+        #app-header .navbar-brand {
             flex: 1;
         }
 
@@ -25,17 +26,21 @@
             width: 50px;
             height: 50px;
         }
+
     </style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.1/css/bulma.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <script src="//apis.google.com/js/platform.js?onload=start"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <a href="/" id="logo"><h4>Udacity Nanodegree</h4></a>
+    <div class="navbar-brand">
+        <a href="/" id="logo"><h4 class="title">Udacity Nanodegree</h4></a>
+    </div>
+
     {% if user %}
-        <img class="user-img" alt="user picture" src="{{user.picture}}"/>
-        {{user.name}}
-    <a href="/logout">LOGOUT</a>
+    <img class="user-img" alt="user picture" src="{{user.picture}}"/>
+    <span class="navbar-item">{{user.name}}</span>
+    <a class="button" href="/logout">LOGOUT</a>
     {% endif -%}
     {% if not user %}
     <div id="signinButton">
@@ -86,6 +91,7 @@
                      }
 
                  }
+
 
     </script>
 </header>

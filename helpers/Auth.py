@@ -45,8 +45,9 @@ def get_user_info(token=None, email=None):
 
 
 @auth.verify_token
-def verify_token():
+def verify_token(token):
     if login_session.get('access_token'):
+        print(token)
         g.current_user = login_session.get('access_token')
         return True
     else:

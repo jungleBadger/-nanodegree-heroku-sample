@@ -3,17 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+    </style>
 </head>
 <body>
 
 <div>
     <div id="wrapper">
         {% include 'header.html' %}
-        <form action="/category/new" method="POST">
-            <input id="name" name="name" type="text" required/>
-            <input id="description" name="description" type="text"/>
-            <button type="submit">Enviar</button>
-        </form>
+        <section class="section">
+            <form action="/category/new" method="POST" class="form">
+                <div class="field">
+                    <p class="control  has-icons-left">
+                        <input id="name"
+                               name="name"
+                               type="text"
+                               required class="input"
+                               placeholder="Category name"/>
+                        <span class="icon is-small is-left">
+                      <i class="fa fa-hashtag"></i>
+                    </span>
+                    </p>
+                </div>
+                <div class="field">
+                    <p class="control  has-icons-left">
+                        <input id="description"
+                               name="description"
+                               type="text"
+                               required class="input"
+                               placeholder="Category description"/>
+                        <span class="icon is-small is-left">
+                      <i class="fa fa-exclamation"></i>
+                    </span>
+                    </p>
+                </div>
+                <button type="submit" class="button is-success">Create</button>
+            </form>
+        </section>
+
     </div>
 
 </div>
