@@ -1,27 +1,30 @@
 # App developed to meet Udacity Nanodegree requirements.
 
-- Log analysis system using postgres within a Linux environment
+- Basic CRUD with Authorization / Authentication service
 
 ### TECHNOLOGIES:
 - Python3
-- Vagrant
-- VirtualBox
-- Postgres
+- aclhemySQL
+- Google OAUth 2 provider
 
 ### Setup
-1. Install Vagrant And VirtualBox (provided by udacity)
-2. Clone this repository
+clone repo
+from root folder `pip3 install -r requirements.txt`
+all data are loaded on 'store.db' file. You can delete this file to start fresh if you want to.
 
 ### To Run
-
-Launch Vagrant VM by running `vagrant up`, you can the log in with `vagrant ssh`
-
-To load the data, use the command `psql -d news -f newsdata.sql` (provided by udacity). It will load all database schema
+from root folder `python3 final.py`
 
 The database includes three tables:
-- Authors table
-- Articles table
-- Log table
+- Users table
+- CatalogItem table
+- Category table
 
-To execute the program, run `python3 db.py` from the command line or from your preferred IDE.
-After running go to http://localhost:8000/ and click on submit button it will load the results.
+To execute the program, run `python3 final.py` from the command line or from your preferred IDE.
+After running go to http://localhost:5000/
+
+### JSON ENDPOINTS
+* `/item/<int:item_id>/v1/JSON'`
+* `'/items/v1/JSON'`
+* `'/category/<int:category_id>/v1/JSON'`
+* `/categories/v1/JSON'`
