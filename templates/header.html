@@ -7,6 +7,17 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
+            box-sizing: border-box;
+            padding: 10px;
+        }
+
+        #app-header #logo {
+            text-decoration: none;
+            flex: 1;
+        }
+
+        #app-header > * {
+            margin: 3px;
         }
 
         #app-header .user-img {
@@ -20,6 +31,7 @@
 
     <script src="//apis.google.com/js/platform.js?onload=start"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <a href="/" id="logo"><h4>Udacity Nanodegree</h4></a>
     {% if user %}
         <img class="user-img" alt="user picture" src="{{user.picture}}"/>
         {{user.name}}
@@ -62,7 +74,7 @@
                              success: function(result) {
                                  // Handle or verify the server response if necessary.
                                  if (result) {
-                                     window.location.href = "/";
+                                    window.location.href = "/";
 
                                  } else if (authResult['error']) {
                                      console.log('There was an error: ' + authResult['error']);

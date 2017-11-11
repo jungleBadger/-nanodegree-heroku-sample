@@ -2,9 +2,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from model.Base import Base
-from model.Category import Category
-from model.CatalogItem import CatalogItem
-from model.User import User
 
 engine = create_engine('sqlite:///store.db')
 # Bind the engine to the metadata of the Base class so that the
@@ -13,7 +10,6 @@ Base.metadata.bind = engine
 Base.metadata.create_all(engine)
 
 DBSession = sessionmaker(bind=engine)
-
 
 # A DBSession() instance establishes all conversations with the database
 # and represents a "staging zone" for all the objects loaded into the
@@ -35,4 +31,3 @@ session = DBSession()
 #
 # session.add(catalogItem1)
 # session.commit()
-

@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        main {
+            display: flex;
+        }
+    </style>
 </head>
 <body>
 
@@ -22,7 +27,12 @@
         {% endfor %}
         </section>
         <section id="right-container">
+            {% for item in items %}
+                   <ul>
+                        <li><a href="">{{item.name}} {{item.category.name}}</a></li>
+                    </ul>
 
+        {% endfor %}
         </section>
 
     </main>

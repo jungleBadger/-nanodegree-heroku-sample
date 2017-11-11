@@ -1,14 +1,18 @@
-from oauth2client.client import flow_from_clientsecrets
-from oauth2client.client import FlowExchangeError
+import json
+import random
+import string
+
 import httplib2
+import requests
 from flask import request, flash, g, make_response
-from flask_httpauth import HTTPTokenAuth
 from flask import session as login_session
+from flask_httpauth import HTTPTokenAuth
+from oauth2client.client import FlowExchangeError
+from oauth2client.client import flow_from_clientsecrets
+from sqlalchemy import exc
+
 from helpers.Session import session
 from model.User import User
-import json
-import requests
-import random, string
 
 auth = HTTPTokenAuth(scheme='Token')
 
@@ -18,28 +22,30 @@ APPLICATION_NAME = "Nanodegreee Udacity "
 
 
 def refresh_user_state():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in range(32))
+    state = ''
+    for x in range(32):
+        state += random.choice(string.ascii_uppercase + string.digits)
     login_session['state'] = state
     return state
+
 
 def get_user_info(token=None, email=None):
     if token:
         try:
             return session.query(User).filter_by(token=token).one()
-        except:
+        except exc.SQLAlchemyError:
             return False
     elif email:
         try:
             return session.query(User).filter_by(email=email).one()
-        except:
+        except exc.SQLAlchemyError:
             return False
     else:
         return False
 
 
 @auth.verify_token
-def verify_token(token):
+def verify_token():
     if login_session.get('access_token'):
         g.current_user = login_session.get('access_token')
         return True
@@ -48,6 +54,7 @@ def verify_token(token):
 
 
 def gconnect():
+    print("AEAWEW")
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -94,13 +101,13 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    stored_access_token = login_session.get('access_token')
-    stored_gplus_id = login_session.get('gplus_id')
-    if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+    # stored_access_token = login_session.get('access_token')
+    # stored_gplus_id = login_session.get('gplus_id')
+    # if stored_access_token is not None and gplus_id == stored_gplus_id:
+    #     response = make_response(json.dumps('Current user is already connected.'),
+    #                              200)
+    #     response.headers['Content-Type'] = 'application/json'
+    #     return response
 
     # Store the access token in the session for later use.
     login_session['access_token'] = credentials.access_token
@@ -112,9 +119,7 @@ def gconnect():
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
-
     check_user = get_user_info(None, data['email'])
-    print(check_user)
     if not check_user:
         user = User(
             name=data['name'],
@@ -129,7 +134,6 @@ def gconnect():
         session.add(check_user)
         session.commit()
 
-
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
@@ -138,9 +142,6 @@ def gconnect():
     output += '<h1>Welcome, '
     output += login_session['username']
     output += '!</h1>'
-    output += '<img src="'
-    output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     return output
 
@@ -151,6 +152,7 @@ def gdisconnect():
         response = make_response(json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
+    print(login_session['access_token'])
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
@@ -165,7 +167,7 @@ def gdisconnect():
         return response
     else:
 
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
 
         response.headers['Content-Type'] = 'application/json'
         return response

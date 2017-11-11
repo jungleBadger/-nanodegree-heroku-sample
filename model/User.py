@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from sqlalchemy import Column, String
+
 from model.Base import Base
 
 
@@ -24,4 +25,3 @@ class User(Base):
         String(40),
         primary_key=True
     )
-

@@ -1,45 +1,50 @@
 #!/usr/bin/env python3
-import random
-import string
-from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from flask import Flask, render_template, request, redirect, jsonify, url_for
+from sqlalchemy import desc
+
+from helpers.Auth import auth, gconnect, gdisconnect, login_session, get_user_info, refresh_user_state
 from helpers.Session import session
-from helpers.Auth import auth, gconnect, gdisconnect, g, login_session, get_user_info, refresh_user_state
-from model.Category import Category
 from model.CatalogItem import CatalogItem
+from model.Category import Category
 
 app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 app.config.from_object(__name__)
 
+
+# ROOT PATH
 @app.route('/home')
 @app.route('/')
 def home():
     categories = session.query(Category).all()
-    # return "This will be our public home page"
-    print(login_session.get('access_token'))
+    items = session.query(CatalogItem).order_by(desc(CatalogItem.created_date)).limit(10)
     return render_template('home.html',
                            user=get_user_info(login_session.get('access_token')),
                            categories=categories,
+                           items=items,
                            STATE=refresh_user_state())
 
 
+# LOG IN USING GOOGLE PROVIDER
 @app.route('/gconnect', methods=['POST'])
 def connect():
     return gconnect()
 
 
+# LOGOUT FROM GOOGLE PROVIDER
 @app.route('/logout', methods=['GET', 'POST'])
 def disconnect():
     return gdisconnect()
 
 
+# INSERT NEW CATEGORY
 @app.route("/category/new", methods=["GET", "POST"])
 @auth.login_required
 def category():
     # If POST will insert new category - else will serve the HTML
     if request.method == 'POST':
-        newCategory = Category(name=request.form['name'])
-        session.add(newCategory)
+        new_category = Category(name=request.form['name'])
+        session.add(new_category)
         session.commit()
         return redirect(url_for('home'), code=302)
     else:
@@ -48,12 +53,27 @@ def category():
                                STATE=refresh_user_state())
 
 
+# LIST CATEGORY DETAILS BY ID
+@app.route("/category/<int:category_id>/info", methods=["GET"])
+def list_category(category_id):
+    scope_category = session.query(Category).filter_by(id=category_id).one()
+    if scope_category:
+        items = session.query(CatalogItem).filter_by(
+            category_id=scope_category.id).all()
+        return render_template('/category/categoryDetails.html',
+                               user=get_user_info(login_session.get('access_token')),
+                               category=scope_category,
+                               items=items,
+                               STATE=refresh_user_state()
+                               )
+    else:
+        return "Invalid query"
+
+
+# INSERT A NEW ITEM INTO CATEGORY BY ID / PROVIDES THE PAGE
 @app.route("/category/<int:category_id>/item/new", methods=["GET", "POST"])
 @auth.login_required
 def item(category_id):
-    # If POST will insert new item - else will serve the HTML
-
-    ## validate if category exhists
     if request.method == 'POST':
         if request.form['item_id']:
             check_item = session.query(CatalogItem).filter_by(id=request.form['item_id']).one()
@@ -63,13 +83,14 @@ def item(category_id):
             session.add(check_item)
             session.commit()
         else:
-            newItem = CatalogItem(name=request.form['name'],
-                                  description=request.form['description'],
-                                  price=request.form['price'],
-                                  category_id=category_id)
-            session.add(newItem)
+            new_item = CatalogItem(
+                name=request.form['name'],
+                description=request.form['description'],
+                price=request.form['price'],
+                category_id=category_id)
+            session.add(new_item)
             session.commit()
-        return redirect(url_for('listCategory', category_id=category_id), code=302)
+        return redirect(url_for('list_category', category_id=category_id), code=302)
     else:
         categories = session.query(Category).all()
         return render_template('/item/newItem.html',
@@ -78,83 +99,60 @@ def item(category_id):
                                STATE=refresh_user_state())
 
 
-
-
+# DELETE CATALOG ITEM BY ID
 @app.route("/category/<int:category_id>/item/<int:item_id>/delete", methods=["POST"])
 @auth.login_required
 def delete_item(category_id, item_id):
     # Delete Category Item by ID
     if request.method == 'POST':
-        itemToDelete = session.query(CatalogItem).filter_by(id=item_id).one()
-        session.delete(itemToDelete)
-        return redirect(url_for('listCategory', category_id=category_id), code=302)
+        item_to_delete = session.query(CatalogItem).filter_by(id=item_id).one()
+        session.delete(item_to_delete)
+        return redirect(url_for('list_category', category_id=category_id), code=302)
 
 
-
-@app.route("/category/<int:category_id>/info", methods=["GET"])
-def listCategory(category_id):
-    # Render page listing a selected category
-    category = session.query(Category).filter_by(id=category_id).one()
-    if category:
-        items = session.query(CatalogItem).filter_by(
-            category_id=category.id).all()
-        return render_template('/category/categoryDetails.html',
-                               user=get_user_info(login_session.get('access_token')),
-                               category=category,
-                               items=items,
-                               STATE=refresh_user_state()
-                               )
-    else:
-        return "Invalid query"
-
-
+# ITEM DETAILS
 @app.route("/catalog/<string:category_name>/items/<int:item_id>")
-def listItem(item_id):
+def list_item(item_id):
     # Render page listing a selected item
-    item = session.query(CatalogItem).filter_by(
-        id=item_id).all()
+    scope_item = session.query(
+        CatalogItem).filter_by(
+        id=item_id
+    ).all()
     return render_template('/item/itemDetails.html',
-                           item=item,
+                           item=scope_item,
                            STATE=refresh_user_state())
-
-
-
-
-
-
 
 
 # JSON REST ENDPOINTS
 
-@app.route('/category/<int:category_id>/v1/JSON')
-def categoryJSON(category_id):
-    # List a Category by ID
-    category = session.query(Category).filter_by(id=category_id).one()
-    items = session.query(CatalogItem).filter_by(
-        category_id=category_id).all()
-    return jsonify(CatalogItem=[i.serialize for i in items], Category=category)
-
-
-@app.route('/category/<int:category_id>/item/<int:item_id>/v1/JSON')
-def catalogItemJSON(category_id, item_id):
-    # List a CatalogItem by ID
-    Catalog_Item = session.query(CatalogItem).filter_by(id=item_id).one()
-    return jsonify(Menu_Item=Catalog_Item.serialize)
-
-
+# List all categories
 @app.route('/categories/v1/JSON')
-def categoriesJSON():
-    # List all categories
+def categories_json():
     categories = session.query(Category).all()
     return jsonify(categories=[r.serialize for r in categories])
 
 
+# List Items from a Category by ID
+@app.route('/category/<int:category_id>/v1/JSON')
+def category_json(category_id):
+    # List a Category by ID
+    items = session.query(CatalogItem).filter_by(
+        category_id=category_id).all()
+    return jsonify(CatalogItems=[i.serialize for i in items])
+
+
+# List a CatalogItem by ID
+@app.route('/item/<int:item_id>/v1/JSON')
+def catalog_item_json(item_id):
+    catalog_item = session.query(CatalogItem).filter_by(id=item_id).one()
+    return jsonify(Menu_Item=catalog_item.serialize)
+
+
+# List all items
 @app.route('/items/v1/JSON')
-def itemsJSON():
-    # List all items
+def items_json():
     items = session.query(CatalogItem).all()
     return jsonify(items=[r.serialize for r in items])
-
 
 
 if __name__ == '__main__':

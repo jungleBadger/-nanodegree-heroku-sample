@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import datetime
+
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
-from model.Category import Category
 from model.Base import Base
+from model.Category import Category
 
 
 class CatalogItem(Base):
@@ -32,4 +33,13 @@ class CatalogItem(Base):
 
     category = relationship(Category)
 
-
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+            'name': self.name,
+            'description': self.description,
+            'id': self.id,
+            'price': self.price,
+            'created_date': self.created_date
+        }
