@@ -52,6 +52,7 @@
             margin: 2px;
         }
 
+
     </style>
 </head>
 <body>
@@ -83,13 +84,14 @@
                 <span class="item-name">{{item.name}}</span>
                 <span class="item-description">{{item.description}}</span>
                 <span class="item-price">{{item.price}}</span>
+                {% if user %}
                 <div class="actions">
                     <button data-item-id="{{item.id}}" class="edit-item">Edit</button>
                     <form method="POST" action="{{'/category/{0}/item/{1}/delete'.format(category.id, item.id)}}">
                         <button data-item-id="{{item.id}}" class="delete-item" type="submit">Delete</button>
                     </form>
                 </div>
-
+                {% endif -%}
             </li>
             {% endfor %}
         </ul>
@@ -204,6 +206,7 @@
 
 
     }());
+
 
 
 
