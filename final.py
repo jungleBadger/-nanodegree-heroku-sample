@@ -140,18 +140,6 @@ def delete_item(category_id, item_id):
             url_for('list_category', category_id=category_id), code=302)
 
 
-# ITEM DETAILS
-@app.route("/catalog/<string:category_name>/items/<int:item_id>")
-def list_item(item_id):
-    # Render page listing a selected item
-    scope_item = session.query(
-        CatalogItem).filter_by(
-        id=item_id
-    ).all()
-    return render_template('item/itemDetails.html',
-                           item=scope_item,
-                           STATE=refresh_user_state())
-
 
 # NEW ITEM (PAGE AND HANDLER)
 @app.route("/item/new", methods=["GET", "POST"])
