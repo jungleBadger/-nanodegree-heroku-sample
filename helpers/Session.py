@@ -2,6 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from model.Base import Base
+from model.Category import Category
+from model.CatalogItem import CatalogItem
+from model.User import User
 
 engine = create_engine('sqlite:///store.db')
 # Bind the engine to the metadata of the Base class so that the

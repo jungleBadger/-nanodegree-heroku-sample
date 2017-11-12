@@ -54,6 +54,12 @@ def verify_token(token):
         return False
 
 
+
+def check_author(email):
+    return  login_session['email'] == email
+
+
+
 def gconnect():
     print("AEAWEW")
     # Validate state token

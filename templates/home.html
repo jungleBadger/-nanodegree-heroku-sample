@@ -86,12 +86,18 @@
                 <p class="menu-label">
                     Latest 10 items
                 </p>
+                  {% if user %}
+                <div>
+                    <a href="/item/new" class="button">New item</a>
+                </div>
+                {% endif -%}
                 {% for item in items %}
                 <ul class="menu-list">
                     <li><a href="">
                         <span class="cat-item-name is-size-1-desktop">{{item.name}}</span>
                         <span class="cat-item-category is-size-1-desktop">{{item.category.name}}</span>
-                        <span class="cat-item-category is-size-1-desktop">{{item.created_date}}
+                        <span class="cat-item-category is-size-1-desktop">{{item.created_date}}</span>
+                        <span>{{item.author}}</span>
                     </a></li>
                 </ul>
                 {% endfor %}

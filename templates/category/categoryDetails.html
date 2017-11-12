@@ -177,11 +177,12 @@
 
         let methods = {
             "populateEditBox": function () {
+            console.log(this.parentElement);
                 props.activeItemId = this.getAttribute("data-item-id");
                 elements.updateItemId.value =  this.getAttribute("data-item-id");
-                elements.itemNameField.value = this.parentElement.querySelector(".item-name").innerText || "";
-                elements.descriptionNameField.value = this.parentElement.querySelector(".item-description").innerText || "";
-                elements.priceNameField.value = this.parentElement.querySelector(".item-price").innerText || "";
+                elements.itemNameField.value = this.parentElement.parentElement.querySelector(".item-name").innerText || "";
+                elements.descriptionNameField.value = this.parentElement.parentElement.querySelector(".item-description").innerText || "";
+                elements.priceNameField.value = this.parentElement.parentElement.querySelector(".item-price").innerText || "";
                 methods.openModal();
             },
             "openModal": function () {

@@ -2,8 +2,13 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for
 from sqlalchemy import desc
 
-from helpers.Auth import auth, gconnect, gdisconnect, login_session,\
-    get_user_info, refresh_user_state
+from helpers.Auth import (auth,
+                          gconnect,
+                          gdisconnect,
+                          login_session,
+                          get_user_info,
+                          refresh_user_state,
+                          check_author)
 from helpers.Session import session
 from model.CatalogItem import CatalogItem
 from model.Category import Category
@@ -65,7 +70,7 @@ def list_category(category_id):
         items = session.query(CatalogItem).filter_by(
             category_id=scope_category.id).all()
         print(get_user_info(login_session.get('access_token')))
-        return render_template('/category/categoryDetails.html',
+        return render_template('category/categoryDetails.html',
                                user=get_user_info(
                                    login_session.get('access_token')),
                                category=scope_category,
@@ -87,11 +92,19 @@ def item(category_id):
             check_item.name = request.form['name']
             check_item.description = request.form['description']
             check_item.price = request.form['price']
-            session.add(check_item)
-            session.commit()
+            if check_author(check_item.author):
+                session.add(check_item)
+                session.commit()
+            else:
+                return "Unauthorized"
+
         else:
             new_item = CatalogItem(
                 name=request.form['name'],
+                author=
+                get_user_info(
+                    login_session.get('access_token')
+                ).email,
                 description=request.form['description'],
                 price=request.form['price'],
                 category_id=category_id)
@@ -115,8 +128,14 @@ def item(category_id):
 def delete_item(category_id, item_id):
     # Delete Category Item by ID
     if request.method == 'POST':
+
         item_to_delete = session.query(CatalogItem).filter_by(id=item_id).one()
-        session.delete(item_to_delete)
+        print(item_to_delete.author)
+        if check_author(item_to_delete.author):
+            session.delete(item_to_delete)
+            session.commit()
+        else:
+            return "Unauthorized"
         return redirect(
             url_for('list_category', category_id=category_id), code=302)
 
@@ -129,9 +148,38 @@ def list_item(item_id):
         CatalogItem).filter_by(
         id=item_id
     ).all()
-    return render_template('/item/itemDetails.html',
+    return render_template('item/itemDetails.html',
                            item=scope_item,
                            STATE=refresh_user_state())
+
+
+# NEW ITEM (PAGE AND HANDLER)
+@app.route("/item/new", methods=["GET", "POST"])
+def add_item():
+    # Delete Category Item by ID
+    if request.method == 'POST':
+        category_id = request.form["category_id"]
+        new_item = CatalogItem(
+            name=request.form['name'],
+            author=
+            get_user_info(
+                login_session.get('access_token')
+            ).email,
+            description=request.form['description'],
+            price=request.form['price'],
+            category_id=category_id)
+        session.add(new_item)
+        session.commit()
+
+        return redirect(
+            url_for('home'), code=302)
+    else:
+        categories = session.query(Category).all()
+        return render_template('/item/newItem.html',
+                               categories=categories,
+                               user=get_user_info(
+                                   login_session.get('access_token')),
+                               STATE=refresh_user_state())
 
 
 # JSON REST ENDPOINTS
