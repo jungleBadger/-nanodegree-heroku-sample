@@ -101,8 +101,7 @@ def item(category_id):
         else:
             new_item = CatalogItem(
                 name=request.form['name'],
-                author=
-                get_user_info(
+                author=get_user_info(
                     login_session.get('access_token')
                 ).email,
                 description=request.form['description'],
@@ -140,7 +139,6 @@ def delete_item(category_id, item_id):
             url_for('list_category', category_id=category_id), code=302)
 
 
-
 # NEW ITEM (PAGE AND HANDLER)
 @app.route("/item/new", methods=["GET", "POST"])
 def add_item():
@@ -149,8 +147,7 @@ def add_item():
         category_id = request.form["category_id"]
         new_item = CatalogItem(
             name=request.form['name'],
-            author=
-            get_user_info(
+            author=get_user_info(
                 login_session.get('access_token')
             ).email,
             description=request.form['description'],
