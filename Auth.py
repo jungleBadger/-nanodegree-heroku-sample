@@ -11,8 +11,8 @@ from oauth2client.client import FlowExchangeError
 from oauth2client.client import flow_from_clientsecrets
 from sqlalchemy import exc
 
-from helpers.Session import session
-from model.User import User
+from Session import session
+from User import User
 
 auth = HTTPTokenAuth(scheme='Token')
 

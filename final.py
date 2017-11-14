@@ -2,16 +2,16 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for
 from sqlalchemy import desc
 
-from helpers.Auth import (auth,
+from Auth import (auth,
                           gconnect,
                           gdisconnect,
                           login_session,
                           get_user_info,
                           refresh_user_state,
                           check_author)
-from helpers.Session import session
-from model.CatalogItem import CatalogItem
-from model.Category import Category
+from Session import session
+from CatalogItem import CatalogItem
+from Category import Category
 
 app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
